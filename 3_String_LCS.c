@@ -1,21 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main (int argc, char *argv[])
 {
-  // char x[] = {'A', 'B', 'C', 'B', 'D', 'A', 'B'};
-  // char y[] = {'B', 'D', 'C', 'A', 'B', 'A'};
+  char *x = "6541254939322816220209974565477289648317";
+  char *y = "3142522751761601737419090933147067701840";
 
-  // char x[] = {'A', 'B', 'C', 'B'};
-  // char y[] = {'B', 'D', 'C', 'A'};
+  int sizeX = strlen(x) + 1;   // Added 1 to have 0th column
+  int sizeY = strlen(y) + 1;   // Added 1 to have 0th row
 
-  char x[] = {'C', 'A', 'C', 'M', 'Y', 'C', 'C', 'A'};
-  char y[] = {'Y', 'M', 'C', 'M', 'A', 'M', 'Y', 'Y', 'C', 'M', 'A'};
-
-  int sizeX = (sizeof(x)/sizeof(char)) + 1;   // Added 1 to have 0th column
-  int sizeY = (sizeof(y)/sizeof(char)) + 1;   // Added 1 to have 0th row
-
-  int lcsMaxLen = (sizeX + sizeY)/2;
+  int lcsMaxLen = ((sizeX > sizeY)? sizeX : sizeY);
   char LCS[lcsMaxLen];
   int lenLCS = 0;
 
@@ -45,12 +40,19 @@ int main (int argc, char *argv[])
     B[0][j] = 'Z';
   }
 
-  // printf("X array is: \n");
-  // for (i = 0; i < sizeX-1; i++)
-  // {
-  //   printf("%C ", x[i]);
-  // }
-  // printf("\n");
+  printf("X array is: \n");
+  for (i = 0; i < sizeX-1; i++)
+  {
+    printf("%C ", x[i]);
+  }
+  printf("\n");
+
+  printf("Y array is: \n");
+  for (i = 0; i < sizeY-1; i++)
+  {
+    printf("%C ", y[i]);
+  }
+  printf("\n");
 
   //******************************************************
   for (i = 1; i < sizeX; i++)
@@ -131,13 +133,13 @@ int main (int argc, char *argv[])
   // Reverse the LCS
   j = lenLCS - 1;
   i = 0;
-  char tempChar;
+  int temp;
 
   while (i < j)
   {
-     tempChar = LCS[i];
+     temp = LCS[i];
      LCS[i] = LCS[j];
-     LCS[j] = tempChar;
+     LCS[j] = temp;
      i++;
      j--;
   }
