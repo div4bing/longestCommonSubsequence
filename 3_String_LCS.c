@@ -2,26 +2,27 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Main function
 int main (int argc, char *argv[])
 {
-  char *x = "6541254939322816220209974565477289648317";
-  char *y = "3142522751761601737419090933147067701840";
-  char *z = "2807030561290354259513570160162463275171";
+  if (argc != 4)                                                                // Make sure the number of input is correct
+  {
+    printf("Error! Invalid number of Arguments. Please run program as ./submission str1 str2 str3\n");
+    return -1;
+  }
 
-  int sizeX = strlen(x) + 1;   // Added 1 to have 0th x
-  int sizeY = strlen(y) + 1;   // Added 1 to have 0th y
-  int sizeZ = strlen(z) + 1;   // Added 1 to have 0th z
+  int sizeX = strlen(argv[1]) + 1;                                              // Added 1 to have 0th x
+  int sizeY = strlen(argv[2]) + 1;                                              // Added 1 to have 0th y
+  int sizeZ = strlen(argv[3]) + 1;                                              // Added 1 to have 0th z
 
-  int lcsMaxLen = ((sizeX > sizeY)? sizeX : sizeY); // TODO: Modify to include Z
+  int lcsMaxLen =  ((((sizeX > sizeY)? sizeX : sizeY) > sizeZ)? ((sizeX > sizeY)? sizeX : sizeY) : sizeZ);    // Get max length from 3 string
   char LCS[lcsMaxLen];
   int lenLCS = 0;
-
   int i, j, k;
+  int C[sizeX][sizeY][sizeZ];                                                   // C Table to store the count
+  char B[sizeX][sizeY][sizeZ];                                                  // B Table to store the trace for arrows
 
-  int C[sizeX][sizeY][sizeZ];
-  char B[sizeX][sizeY][sizeZ];
-
-  for (i = 0; i <  sizeX; i++)
+  for (i = 0; i <  sizeX; i++)                                                  // Initialize the B and C Tables
   {
     for (j = 0; j < sizeY; j++)
     {
@@ -33,106 +34,55 @@ int main (int argc, char *argv[])
     }
   }
 
-  for (i = 0; i <  sizeX; i++)
+  for (i = 0; i <  sizeX; i++)                                                  // Put Z on the X axis of B table to identify base case
   {
     C[i][0][0] = 0;
     B[i][0][0] = 'Z';
   }
 
-  for (j = 0; j < sizeY; j++)
+  for (j = 0; j < sizeY; j++)                                                   // Put Z on the Y axis of B table to identify base case
   {
     C[0][j][0] = 0;
     B[0][j][0] = 'Z';
   }
 
-  for (k = 0; k < sizeZ; k++)
+  for (k = 0; k < sizeZ; k++)                                                   // Put Z on the Z axis of B table to identify base case
   {
     C[0][0][k] = 0;
     B[0][0][k] = 'Z';
   }
 
-  printf("X array is: \n");
-  for (i = 0; i < sizeX-1; i++)
-  {
-    printf("%C ", x[i]);
-  }
-  printf("\n");
-
-  printf("Y array is: \n");
-  for (i = 0; i < sizeY-1; i++)
-  {
-    printf("%C ", y[i]);
-  }
-  printf("\n");
-
-  printf("Z array is: \n");
-  for (i = 0; i < sizeZ-1; i++)
-  {
-    printf("%C ", z[i]);
-  }
-  printf("\n");
-  //******************************************************
-  for (i = 1; i < sizeX; i++)
+  for (i = 1; i < sizeX; i++)                                                   // Main algorithm to calculate the C table and update B table
   {
     for (j = 1; j < sizeY; j++)
     {
       for (k = 1; k < sizeZ; k++)
       {
-        printf("x=%C, y=%C and z=%C\n",x[i-1], y[j-1], z[k-1]);
-        if ((x[i-1] == y[j-1]) && (x[i-1] == z[k-1]))           // If all are same, then diagonal + 1
+        if ((argv[1][i-1] == argv[2][j-1]) && (argv[1][i-1] == argv[3][k-1]))   // If X, Y, Z same, then diagonal + 1 and store Diagonal 'D' as arrow
         {
-          printf("FOUND MATCH\n");
-          C[i][j][k] = C[i-1][j-1][k-1] + 1;              // Added 1 as we start from 0 not 1
+          C[i][j][k] = C[i-1][j-1][k-1] + 1;                                    // Added 1 as we start from 0 not 1
           B[i][j][k] = 'D';
         }
         else
         {
-          if ((C[i-1][j][k] >= C[i][j-1][k]) && ((C[i-1][j][k] >= C[i][j][k-1])))             // If top element is bigger or equals to left element then copy top element
+          if ((C[i-1][j][k] >= C[i][j-1][k]) && ((C[i-1][j][k] >= C[i][j][k-1]))) // If top X element is bigger or equals then copy the element
           {
             C[i][j][k] = C[i-1][j][k];
-            B[i][j][k] = '1'; // Go up on X
+            B[i][j][k] = '1';                                                   // Go up on X, Here 1 is unique identifier to go left on X axis
           }
-          else if ((C[i][j-1][k] >= C[i-1][j][k]) && ((C[i][j-1][k] >= C[i][j][k-1])))
+          else if ((C[i][j-1][k] >= C[i-1][j][k]) && ((C[i][j-1][k] >= C[i][j][k-1]))) // If top Y element is bigger or equals then copy the element
           {
             C[i][j][k] = C[i][j-1][k];
-            B[i][j][k] = '2'; // Go up on Y
+            B[i][j][k] = '2';                                                   // Go up on Y, Here 2 is unique identifier to go left on Y axis
           }
-          else
+          else                                                                  // Top Z element is bigger or equals then copy the element
           {
             C[i][j][k] = C[i][j][k-1];
-            B[i][j][k] = '3'; // Go up on Z
+            B[i][j][k] = '3';                                                   // Go up on Z, Here 3 is unique identifier to go left on Z axis
           }
         }
       }
     }
-  }
-
-  printf("C Matrix:\n\n");
-  for (i = 0; i <  sizeX; i++)
-  {
-    for (j = 0; j < sizeY; j++)
-    {
-      for (k = 0; k < sizeZ; k++)
-      {
-        printf("%d ", C[i][j][k]);
-      }
-      printf("\n");
-    }
-    printf("\n");
-  }
-
-  printf("\nB Matrix:\n\n");
-  for (i = 0; i <  sizeX; i++)
-  {
-    for (j = 0; j < sizeY; j++)
-    {
-      for (k = 0; k < sizeZ; k++)
-      {
-        printf("%C ", B[i][j][k]);
-      }
-      printf("\n");
-    }
-    printf("\n");
   }
 
   // Follow arrow and store the LCS
@@ -141,29 +91,26 @@ int main (int argc, char *argv[])
   k = sizeZ-1;
   lenLCS = 0;
 
-  while ((i != 0) && (j != 0) && (k != 0))      // If we reach 1st element in the 2D array, then break
+  while ((i != 0) && (j != 0) && (k != 0))                                      // If we reach 1st element in the 2D array, then break
   {
-    printf("i=%d j=%d k=%d B[%d][%d][%d]=%C\n",i, j, k, i, j, k, B[i][j][k]);
-
-    if (B[i][j][k] == '1')       // If UP arrow
+    if (B[i][j][k] == '1')                                                      // If top X arrow
     {
       i = i - 1;
       continue;
     }
-    else if (B[i][j][k] == '2')
+    else if (B[i][j][k] == '2')                                                 // If top Y arrow
     {
       j = j - 1;
       continue;
     }
-    else if (B[i][j][k] == '3')
+    else if (B[i][j][k] == '3')                                                 // If top Z arrow
     {
       k = k - 1;
       continue;
     }
-    else if (B[i][j][k] == 'D')    // Found the diagonal arrow, store it in our LCS and increase LCS count
+    else if (B[i][j][k] == 'D')                                                 // Found the diagonal arrow, store it in our LCS and increase LCS count and continue to diagonal element
     {
-      printf("Loading x[%d]=%C\n",i-1, x[i-1]);
-      LCS[lenLCS] = x[i-1];                       // LCS is in reverse order
+      LCS[lenLCS] = argv[1][i-1];                                               // LCS is in reverse order
       lenLCS++;
       i = i - 1;
       j = j - 1;
@@ -171,7 +118,7 @@ int main (int argc, char *argv[])
     }
   }
 
-  // Reverse the LCS
+  // Reverse the LCS to print in proper way
   j = lenLCS - 1;
   i = 0;
   int temp;
@@ -185,14 +132,12 @@ int main (int argc, char *argv[])
      j--;
   }
 
-  printf("\nLCS is:\n");
+  printf("The length of the LCS= %d, and LCS = ", lenLCS);                      // Print the LCS with length of LCS
   for (i = 0; i < lenLCS; i++)
   {
-    printf("%C ", LCS[i]);
+    printf("%C", LCS[i]);
   }
-  printf("\nLength of LCS is: %d\n", lenLCS);
-
-  //******************************************************
+  printf("\n");
 
   return 0;
 }
