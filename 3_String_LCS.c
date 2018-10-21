@@ -132,7 +132,7 @@ int main (int argc, char *argv[])
      j--;
   }
 
-  printf("The length of the LCS= %d, and LCS = ", lenLCS);                      // Print the LCS with length of LCS
+  printf("The length of the LCS= %d, and an LCS = ", lenLCS);                      // Print the LCS with length of LCS
   for (i = 0; i < lenLCS; i++)
   {
     printf("%C", LCS[i]);
